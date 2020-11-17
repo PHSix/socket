@@ -11,3 +11,7 @@ replace handler => ./handler
 require requests v0.0.0
 
 replace requests => ./requests
+
+require mybubletea v0.0.0
+
+replace mybubletea => ./mybubletea

@@ -7,25 +7,26 @@ import (
 	"net"
 	"os"
 	"requests"
+	// _ "mybubletea"
 )
 
 const (
-	tcpPort=":8092"
-	udpPort=":8091"
-	host="127.0.0.1"
+	tcpPort = ":8092"
+	udpPort = 8091
+	host    = "127.0.0.1"
 )
 
 func main() {
 	var input string
 	c := color.New(color.FgHiBlack, color.BgCyan)
-	c.Printf("请选择是选择tcp, tcpserver, udp, udpserver之一")
+	c.Printf("请选择是选择tcp, tcpserver, udp, udpserver之一: ")
 	fmt.Scan(&input)
 	// 判断选择运行的模式
 	// tcp tcpserver udp udpserver
 	switch input {
 	case "tcp":
 		// 创建conn
-		conn, err := net.Dial("tcp", host + tcpPort)
+		conn, err := net.Dial("tcp", host+tcpPort)
 		defer conn.Close()
 		if err != nil {
 			handler.Error("创建conn失败")
@@ -42,7 +43,7 @@ func main() {
 		// 准备接受服务端的信息
 		buf := make([]byte, 1024)
 		_, err = conn.Read(buf)
-		if err != nil{
+		if err != nil {
 			handler.Error("接受不到服务端返回的信息")
 		}
 		handler.Recv(string(buf))
@@ -65,15 +66,32 @@ func main() {
 			go tcpServerHandle(conn)
 		}
 	case "udp":
-		conn, err := net.Dial("udp", host + udpPort)
-		if err != nil{
+		conn, err := net.DialUDP("udp", nil, &net.UDPAddr{
+			IP:   net.IPv4(0, 0, 0, 0),
+			Port: udpPort,
+		})
+		if err != nil {
 			handler.Error("创建conn失败")
 		}
 		fmt.Scan(&input)
 		conn.Write([]byte(input))
 		break
 	case "udpserver":
-		break
+		listener, err := net.ListenUDP("udp", &net.UDPAddr{
+			IP:   net.IPv4(0, 0, 0, 0),
+			Port: udpPort,
+		})
+		if err != nil {
+			handler.Error("udpserver创建失败")
+		}
+		for {
+			recData := make([]byte, 1024)
+			_, addr, err := listener.ReadFromUDP(recData)
+			if err != nil {
+				handler.Error("udpserver接收失败")
+			}
+			handler.Recv("来自ip为：" + addr.IP.String() + "消息为：" + string(recData))
+		}
 	default:
 		handler.Error("输入错误")
 		os.Exit(1)
