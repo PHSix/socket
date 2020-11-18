@@ -1,4 +1,4 @@
-module learn/color
+module learn/socket
 
 go 1.15
 
@@ -15,3 +15,7 @@ replace requests => ./requests
 require mybubletea v0.0.0
 
 replace mybubletea => ./mybubletea
+
+require survey v0.0.0
+
+replace survey => ./survey

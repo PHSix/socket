@@ -13,7 +13,7 @@ type model struct {
 	selected map[int]struct{} // which to-do items are selected
 }
 var sexModel = model{
-	choices: []string{"man", "woman"},
+	choices: []string{"tcpserver", "tcp", "udpserver", "udp"},
 	selected: make(map[int]struct{}),
 }
 
@@ -91,14 +91,10 @@ func (m model) View() string {
 	return s
 }
 
+
 func init() {
 	p := tea.NewProgram(sexModel)
 	if err := p.Start(); err != nil {
-		fmt.Printf("Alas, there's been an error: %v", err)
-		os.Exit(1)
-	}
-	q := tea.NewProgram(sexModel)
-	if err := q.Start(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
 	}

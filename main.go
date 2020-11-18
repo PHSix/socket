@@ -2,28 +2,24 @@ package main
 
 import (
 	"fmt"
-	"github.com/fatih/color"
 	"handler"
 	"net"
 	"os"
 	"requests"
-	// _ "mybubletea"
-)
-
-const (
-	tcpPort = ":8092"
-	udpPort = 8091
-	host    = "127.0.0.1"
+	"strconv"
+	"survey"
 )
 
 func main() {
+	selected := survey.Start()
 	var input string
-	c := color.New(color.FgHiBlack, color.BgCyan)
-	c.Printf("请选择是选择tcp, tcpserver, udp, udpserver之一: ")
-	fmt.Scan(&input)
-	// 判断选择运行的模式
-	// tcp tcpserver udp udpserver
-	switch input {
+	var (
+		// tcpPort = ":8092"
+		tcpPort = ":" + strconv.Itoa(selected.Port)
+		udpPort = selected.Port
+		host    = "127.0.0.1"
+	)
+	switch selected.Server {
 	case "tcp":
 		// 创建conn
 		conn, err := net.Dial("tcp", host+tcpPort)
@@ -51,8 +47,10 @@ func main() {
 	case "tcpserver":
 		listener, err := net.Listen("tcp", tcpPort)
 		if err != nil {
-			handler.Error("创建listener失败")
+			handler.Error("tcpserver创建失败")
 			return
+		}else{
+			handler.Inform("tcpserver服务启动")
 		}
 		defer listener.Close()
 		for {
@@ -83,6 +81,8 @@ func main() {
 		})
 		if err != nil {
 			handler.Error("udpserver创建失败")
+		}else{
+			handler.Inform("udpserver服务启动")
 		}
 		for {
 			recData := make([]byte, 1024)
